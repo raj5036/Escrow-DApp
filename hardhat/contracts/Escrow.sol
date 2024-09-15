@@ -25,6 +25,11 @@ contract Escrow {
 		_;
 	}
 
+	modifier OnlyDepositor () {
+		require(depostors[msg.sender], "You are not a depositor");
+		_;
+	}
+
 	function transferArbiterRole(address _addr) public OnlyArbiter {
 		arbiter = _addr;
 	}
@@ -38,7 +43,11 @@ contract Escrow {
 		emit DepositorAdded(depositor);
 	}
 
-	function sendFundsToBeneficiary(address beneficiary, uint256 amount) external {
+	function sendFundsToBeneficiary(address beneficiary, uint256 amount) external OnlyDepositor {
+		if (address(this).balance < amount) {
+			revert InsufficientFunds();
+		}
+		
 		(bool success, ) = beneficiary.call{value: amount}("");
 		require(success, "Failed to send funds to beneficiary");
 
