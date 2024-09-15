@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 contract Escrow {
-	address private arbiter;
+	address public arbiter;
 	mapping(address => bool) public depostors;
 
 	error NotArbiter(address);
